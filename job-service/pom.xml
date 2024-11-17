@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.integration</groupId>
+	<artifactId>job-service</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Azure Java Functions</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>11</java.version>
+		<azure.functions.maven.plugin.version>1.24.0</azure.functions.maven.plugin.version>
+		<azure.functions.java.library.version>2.2.0</azure.functions.java.library.version>
+		<merge.ats.client.version>2.0.0</merge.ats.client.version>
+		<threetenbp.library.version>1.5.0</threetenbp.library.version>
+		<jackson.core.version>2.15.0</jackson.core.version>
+		<jackson.databind.version>2.15.0</jackson.databind.version>
+		<azure.functions.blob.storage.version>12.28.1</azure.functions.blob.storage.version>
+		<org.slf4j.version>2.0.16</org.slf4j.version>
+		<com.itextpdf.library.version>8.0.5</com.itextpdf.library.version>
+		<unit.jupiter.library.version>5.4.2</unit.jupiter.library.version>
+		<mockito.core.library.version>2.23.4</mockito.core.library.version>
+		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+		<maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
+		<functionAppName>job-service-function</functionAppName>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.microsoft.azure.functions</groupId>
+			<artifactId>azure-functions-java-library</artifactId>
+			<version>${azure.functions.java.library.version}</version>
+		</dependency>
+		<!-- dev.merge -->
+		<dependency>
+			<groupId>dev.merge.ats</groupId>
+			<artifactId>merge-ats-client</artifactId>
+			<version>${merge.ats.client.version}</version>
+		</dependency>
+		<!-- threetenbp timeoffset -->
+		<dependency>
+			<groupId>org.threeten</groupId>
+			<artifactId>threetenbp</artifactId>
+			<version>${threetenbp.library.version}</version>
+		</dependency>
+		<!-- jackson-core -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.core.version}</version>
+		</dependency>
+		<!-- jackson-databind -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.databind.version}</version>
+		</dependency>
+		<!-- azure-storage-blob -->
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-storage-blob</artifactId>
+			<version>${azure.functions.blob.storage.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${org.slf4j.version}</version> <!-- Check the latest version -->
+		</dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itext-core</artifactId>
+			<version>${com.itextpdf.library.version}</version>
+			<type>pom</type>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${unit.jupiter.library.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.core.library.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.plugin.version}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.microsoft.azure</groupId>
+				<artifactId>azure-functions-maven-plugin</artifactId>
+				<version>${azure.functions.maven.plugin.version}</version>
+				<configuration>
+					<!-- function app name -->
+					<appName>${functionAppName}</appName>
+					<!-- function app resource group -->
+					<resourceGroup>hr-poc</resourceGroup>
+					<!-- function app service plan name -->
+					<appServicePlanName>ASP-hrpoc-bf19</appServicePlanName>
+					<!-- function app region-->
+					<!-- refers
+					https://github.com/microsoft/azure-maven-plugins/wiki/Azure-Functions:-Configuration-Details#supported-regions
+					for all valid values -->
+					<region>Central India</region>
+					<!-- function pricingTier, default to be consumption if not
+					specified -->
+					<!-- refers
+					https://github.com/microsoft/azure-maven-plugins/wiki/Azure-Functions:-Configuration-Details#supported-pricing-tiers
+					for all valid values -->
+					<!-- <pricingTier></pricingTier> -->
+					<!-- Whether to disable application insights, default is
+					false -->
+					<!-- refers
+					https://github.com/microsoft/azure-maven-plugins/wiki/Azure-Functions:-Configuration-Details
+					for all valid configurations for application insights-->
+					<!-- <disableAppInsights></disableAppInsights> -->
+					<runtime>
+						<!-- runtime os, could be windows, linux or docker-->
+						<os>windows</os>
+						<javaVersion>11</javaVersion>
+					</runtime>
+					<appSettings>
+						<property>
+							<name>FUNCTIONS_EXTENSION_VERSION</name>
+							<value>~4</value>
+						</property>
+					</appSettings>
+				</configuration>
+				<executions>
+					<execution>
+						<id>package-functions</id>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--Remove obj folder generated by .NET SDK in maven clean-->
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>${maven.clean.plugin.version}</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>obj</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
